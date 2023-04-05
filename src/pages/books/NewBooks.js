@@ -1,37 +1,44 @@
-import React, { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { AdminLayout } from "../../components/layout/AdminLayout"
-import { Container, Button, Form, Spinner } from "react-bootstrap"
-import { CustomInput } from "../../components/custom-input/CustomInput"
-import { addBookAction } from "./bookAction"
-import { useNavigate } from "react-router-dom"
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AdminLayout } from "../../components/layout/AdminLayout";
+import { Container, Button, Form } from "react-bootstrap";
+import { CustomInput } from "../../components/custom-input/CustomInput";
+import { addBookAction } from "./bookAction";
+import { Link } from "react-router-dom";
 
-const initialState = { thumbnail: "", title: "", summary: "", ratings: "" }
+const initialState = { 
+  thumbnail: "",
+   title: "",
+    summary: "",
+     ratings: "" ,
+    available:true,
+  availableFrom: Date(),
+  published:"",
+  author:""
+};
 const NewBooks = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const [form, setForm] = useState(initialState)
-  const { user } = useSelector((state) => state.user)
-  const { isLoading } = useSelector((state) => state.book)
+  const dispatch = useDispatch();
+  const [form, setForm] = useState(initialState);
 
+  const { user } = useSelector((state) => state.user);
   if (user?.role !== "admin") {
-    return <h1>Unauthorized</h1>
+    return <h1>Unauthorized</h1>;
   }
 
   const handleOnChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
     setForm({
       ...form,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handleOnSubmit = (e) => {
-    e.preventDefault()
-    dispatch(addBookAction(form))
-    navigate("/admin/books")
-  }
+    e.preventDefault();
+
+    dispatch(addBookAction(form));
+  };
 
   const inputs = [
     {
@@ -39,6 +46,19 @@ const NewBooks = () => {
       type: "text",
       placeholder: "Book title",
       label: "Book Name",
+      required: true,
+    },
+    {
+      name: "author",
+      type: "text",
+      placeholder: "Author Name",
+      label: "Author",
+      required: true,
+    },
+    {
+      name: "published",
+      type: "number",
+      label: "Published Year",
       required: true,
     },
     {
@@ -65,7 +85,7 @@ const NewBooks = () => {
       rows: "5",
       required: true,
     },
-  ]
+  ];
 
   return (
     <AdminLayout>
@@ -74,24 +94,23 @@ const NewBooks = () => {
           onSubmit={handleOnSubmit}
           className="w-75 m-auto border rounded p-2 mt-5"
         >
+          <Link to="/admin/books">
+            <Button variant="secondary"> &lt; Back </Button>
+          </Link>
           <h4 className="mt-4">Add New book </h4>
           <hr />
           {inputs.map((item, i) => (
-            <CustomInput {...item} onChange={handleOnChange} />
+            <CustomInput key={i} {...item} onChange={handleOnChange} />
           ))}
           <div className="py-3 d-grid">
             <Button type="submit" variant="primary">
-              {isLoading ? (
-                <Spinner animation="border" variant="light" />
-              ) : (
-                "Submit New Book"
-              )}
+              Submit New Book
             </Button>
           </div>
         </Form>
       </Container>
     </AdminLayout>
-  )
-}
+  );
+};
 
-export default NewBooks
+export default NewBooks;
